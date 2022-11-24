@@ -50,7 +50,14 @@ public class Finder3 {
             int cost2 = preCost + getMinPoint(matrixWithout, indexI, indexJ);
             roads.add(new Road2(-(indexI), -(indexJ), matrixWithout, cost2));
 
+            getNewWayAndCitiesToGo(roads.get(roads.size()-1));
+            getNewWayAndCitiesToGo(roads.get(roads.size()-2));
+
             Road2 nowRoad = getRoad(roads);
+            if (nowRoad.getWay()!=null)
+                way = nowRoad.getWay();
+            printWay(way);
+            citiesToGo = nowRoad.getCitiesToGo();
             matrix = cloneMatrix(nowRoad.matrix);
             System.out.println();
             printMatrix(matrix);
@@ -101,20 +108,17 @@ public class Finder3 {
         Road2 itogRoad = (Road2) roads.get(index);
         roads.remove(index);
         preCost = itogRoad.cost;
-        if (itogRoad.city<0){
-            way.clear();
-            citiesToGo.clear();
-            citiesToGo.add(1);
-            citiesToGo.add(2);
-            citiesToGo.add(3);
-            citiesToGo.add(4);
-            citiesToGo.add(5);
-            citiesToGo.add(6);
+        return itogRoad;
+    }
+
+    private void getNewWayAndCitiesToGo(Road2 itogRoad){
+        if (itogRoad.city<0 || itogRoad.nextCity<0){
+            itogRoad.setWay(cloneArrayList(way));
+            itogRoad.setCitiesToGo(cloneArrayList(citiesToGo));
         }
-        if (itogRoad.city>-1 && itogRoad.nextCity>-1 && !citiesToGo.isEmpty()){
+        else if (!citiesToGo.isEmpty()){
             way.add(citiesToGo.get(itogRoad.city));
             way.add(citiesToGo.get(itogRoad.nextCity));
-            printWay(way);
             if (itogRoad.city > itogRoad.nextCity) {
                 citiesToGo.remove(itogRoad.city);
                 citiesToGo.remove(itogRoad.nextCity);
@@ -123,8 +127,9 @@ public class Finder3 {
                 citiesToGo.remove(itogRoad.city);
                 citiesToGo.remove(itogRoad.nextCity-1);
             }
+            itogRoad.setWay(cloneArrayList(way));
+            itogRoad.setCitiesToGo(cloneArrayList(citiesToGo));
         }
-        return itogRoad;
     }
 
     private int getMinPoint(int[][] matrix, int indexI, int indexJ){
@@ -162,6 +167,14 @@ public class Finder3 {
         int count = 0;
         for (int[] line : martrix) {
             clone[count++] = line.clone();
+        }
+        return clone;
+    }
+
+    private ArrayList<Integer> cloneArrayList(ArrayList<Integer> list){
+        ArrayList<Integer> clone = new ArrayList<>();
+        for (int i=0; i< list.size(); i++){
+            clone.add(list.get(i));
         }
         return clone;
     }
